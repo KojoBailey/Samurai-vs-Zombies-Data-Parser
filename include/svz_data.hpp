@@ -7,6 +7,9 @@ class SvZ_Data {
 public:
     SvZ_Data(std::filesystem::path path) {
         std::ifstream file(path);
+        if (!file.is_open()) {
+            return;
+        }
         std::string buffer;
         std::string variable;
         std::string value;
