@@ -3,6 +3,13 @@
 #include <unordered_map>
 #include <string_view>
 
+namespace kojo {
+
+struct SvZ_Price {
+    int coins;
+    int glu_credits;
+};
+
 class SvZ_Data {
 public:
     SvZ_Data(std::filesystem::path path) {
@@ -48,6 +55,7 @@ public:
 
             add(group, variable, value);
         }
+        file.close();
     }
 
     void add(std::string_view group, std::string_view variable, std::string_view value) {
@@ -67,6 +75,19 @@ public:
         return "";
     }
 
+    static SvZ_Price split(std::string_view value) {
+        SvZ_Price result;
+        std::string buffer{""};
+        int i;
+        for (i = 0; value.at(i) != ','; i++)
+            buffer += value.at(i);
+        result.coins = std::stoi(buffer);
+        buffer = "";
+        for (i++; i < value.size(); i++)
+            buffer += value.at(i);
+        result.glu_credits = std::stoi(buffer);
+        return result;
+    }
 private:
     std::unordered_map<std::string, std::string> data;
 
@@ -74,3 +95,5 @@ private:
         return std::string(group) + "&&" + std::string(variable);
     }
 };
+
+}
