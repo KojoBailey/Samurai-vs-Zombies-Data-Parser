@@ -55,10 +55,16 @@ public:
     }
 
     std::string fetch(std::string_view group, std::string_view variable) {
-        return data[key_gen(group, variable)];
+        std::string key = key_gen(group, variable);
+        if (data.contains(key))
+            return data[key];
+        return "";
     }
     std::string fetch(std::string_view variable) {
-        return data[key_gen(".", variable)]; // default group
+        std::string key = key_gen(".", variable); // default group
+        if (data.contains(key))
+            return data[key];
+        return "";
     }
 
 private:
