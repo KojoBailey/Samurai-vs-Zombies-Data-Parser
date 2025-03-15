@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <fstream>
 #include <unordered_map>
+#include <unordered_set>
 #include <string_view>
 
 namespace kojo {
@@ -25,7 +26,7 @@ public:
         while (!file.eof()) {
             std::getline(file, buffer);
             // Skip empty lines
-            if (buffer.size() < 1) continue;
+            if (buffer.size() < 3) continue;
             // Skip comments
             if (buffer.at(0) == '/') continue;
 
@@ -47,7 +48,7 @@ public:
             }
 
             // Value
-            for (i; buffer.at(i) == ' ' || buffer.at(i) == '='; i++) {}
+            for (i; i >= buffer.size() || buffer.at(i) == ' ' || buffer.at(i) == '='; i++) {}
             value = "";
             for (i; i < buffer.size() && buffer.at(i) != ' '; i++) {
                 value += buffer.at(i);
@@ -60,6 +61,7 @@ public:
 
     void add(std::string_view group, std::string_view variable, std::string_view value) {
         data[key_gen(group, variable)] = value;
+        groups.insert(std::string(group));
     }
 
     std::string fetch(std::string_view group, std::string_view variable) {
@@ -73,6 +75,10 @@ public:
         if (data.contains(key))
             return data[key];
         return "";
+    }
+
+    size_t group_count() {
+        return groups.size();
     }
 
     static SvZ_Price split(std::string_view value) {
@@ -90,6 +96,7 @@ public:
     }
 private:
     std::unordered_map<std::string, std::string> data;
+    std::unordered_set<std::string> groups;
 
     std::string key_gen(std::string_view group, std::string_view variable) {
         return std::string(group) + "&&" + std::string(variable);
