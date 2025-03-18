@@ -13,6 +13,8 @@ struct SvZ_Price {
 
 class SvZ_Data {
 public:
+    std::unordered_set<std::string> groups;
+
     SvZ_Data(std::filesystem::path path) {
         std::ifstream file(path);
         if (!file.is_open()) {
@@ -77,6 +79,17 @@ public:
         return "";
     }
 
+    bool contains(std::string_view group, std::string_view variable) {
+        std::string key = key_gen(group, variable);
+        if (data.contains(key)) return true;
+        return false;
+    }
+    bool contains(std::string_view variable) {
+        std::string key = key_gen(".", variable);
+        if (data.contains(key)) return true;
+        return false;
+    }
+
     size_t group_count() {
         return groups.size();
     }
@@ -96,7 +109,6 @@ public:
     }
 private:
     std::unordered_map<std::string, std::string> data;
-    std::unordered_set<std::string> groups;
 
     std::string key_gen(std::string_view group, std::string_view variable) {
         return std::string(group) + "&&" + std::string(variable);
