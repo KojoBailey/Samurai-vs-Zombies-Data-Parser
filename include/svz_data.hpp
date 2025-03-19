@@ -4,6 +4,9 @@
 #include <unordered_set>
 #include <string_view>
 
+#include <iostream>
+#define DEBUG_LOG(x) std::cout << x << "\n"
+
 namespace kojo {
 
 struct SvZ_Price {
@@ -50,7 +53,7 @@ public:
             }
 
             // Value
-            for (i; i >= buffer.size() || buffer.at(i) == ' ' || buffer.at(i) == '='; i++) {}
+            for (i; i < buffer.size() && (buffer.at(i) == ' ' || buffer.at(i) == '='); i++) {}
             value = "";
             for (i; i < buffer.size() && buffer.at(i) != ' '; i++) {
                 value += buffer.at(i);
